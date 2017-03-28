@@ -1,4 +1,5 @@
 class Board {
+
   constructor(empty) {
     this._empty = empty;
     this._state = [0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -29,6 +30,14 @@ class Board {
            this._rowWinner(2) ||
            this._ldiagWinner() ||
            this._rdiagWinner();
+  }
+
+  get state() {
+    return this._state.slice(0);
+  }
+
+  set state(val) {
+    this._state = val;
   }
 
   _ldiagWinner() {
@@ -138,6 +147,23 @@ class TicTacToeGame {
       }
     }
   }
+
+  toJSON() {
+    return JSON.stringify({
+      boardState: this._board._state,
+      isOver: this.isOver(),
+      winner: this.winner || null,
+      humanFirst: this.humanFirst
+    });
+  }
+
+  static fromJSON(json) {
+    let gameObject = JSON.parse(json);
+    let game = new TicTacToeGame({ humanFirst: gameObject.humanFirst });
+    game.board.state = gameObject.boardState;
+    return game;
+  }
+
 }
 
 module.exports = TicTacToeGame;
