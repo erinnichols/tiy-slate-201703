@@ -1,0 +1,39 @@
+{% extends 'parent.html' %}
+{% block title %}GAME #{{ index }}{% endblock %}
+{% block marquee %}this is game {{ index }}{% endblock %}
+{% block body %}
+
+<a href="/"><< Back</a>
+
+<div class="zoom">
+<table border=2 cellspacing=2 cellpadding=5 align="center">
+  <caption>
+    {% if game.winner %}
+      Winner is {{ 'you' if game.winner == game._humanIndex else 'the computer, which never wins' }}
+    {% else %}
+    x is {{ 'you' if game.humanFirst else 'the comput3r' }}
+    {% endif %}
+  </caption>
+    {% for row in range(3) %}
+    <tr>
+    {% for col in range(3) %}
+    <td>
+      {% if game.board.whatsInThisSpace(row, col) == 1 %}
+      &nbsp;x&nbsp;
+      {% elif game.board.whatsInThisSpace(row, col) == 2 %}
+      &nbsp;o&nbsp;
+      {% else %}
+      <form method="post">
+        <button>&nbsp;&nbsp;</button>
+        <input type="hidden" name="row" value="{{ row }}"/>
+        <input type="hidden" name="col" value="{{ col }}"/>
+      </form>
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+    {% endfor %}
+</table>
+</div>
+
+{% endblock %}

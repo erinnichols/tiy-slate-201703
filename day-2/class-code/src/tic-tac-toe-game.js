@@ -111,12 +111,13 @@ class Singularity {
 }
 
 class TicTacToeGame {
-  constructor({ humanFirst: hf } = { humanFirst: true }) {
+  constructor({ humanFirst: hf , gameId: gameId } = { humanFirst: true, gameId: new Date().valueOf() }) {
     this._humanIndex = hf ? 1 : 2;
     this._computerIndex = hf ? 2 : 1;
     this.humanFirst = hf;
     this._board = new Board(this.humanFirst);
     this._computer = new Singularity();
+    this._gameId = gameId;
     if (!hf) {
       this._letComputerMakeMove();
     }
@@ -139,6 +140,10 @@ class TicTacToeGame {
     return this.board.winner;
   }
 
+  get gameId() {
+    return this._gameId;
+  }
+
   _letComputerMakeMove() {
     if (this._board.winner === undefined) {
       let [row, col] = this._computer.decideMove(this._board);
@@ -153,13 +158,17 @@ class TicTacToeGame {
       boardState: this._board._state,
       isOver: this.isOver(),
       winner: this.winner || null,
-      humanFirst: this.humanFirst
+      humanFirst: this.humanFirst,
+      gameId: this.gameId
     });
   }
 
   static fromJSON(json) {
     let gameObject = JSON.parse(json);
-    let game = new TicTacToeGame({ humanFirst: gameObject.humanFirst });
+    let game = new TicTacToeGame({
+      humanFirst: gameObject.humanFirst,
+      gameId: gameObject.gameId
+    });
     game.board.state = gameObject.boardState;
     return game;
   }

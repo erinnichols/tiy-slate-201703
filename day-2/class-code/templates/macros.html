@@ -1,0 +1,7 @@
+{% macro gameState(game) %}
+{% if game.winner %}
+  A completed game. Winner was {{ 'you' if game.winner == game._humanIndex else 'the computer, which never wins' }}
+{% else %}
+A game where {% if game.humanFirst %} you {% else %} the computer {% endif %} went first
+{% endif %}
+{% endmacro %}

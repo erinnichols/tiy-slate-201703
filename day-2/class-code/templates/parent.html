@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <title>{% block title %}title here{% endblock %}</title>
+  <style>
+    html, body {
+      background-color: #9a9a9a;
+      font-family: 'Times New Roman';
+    }
+    .no-zoom {
+      zoom: -4;
+    }
+    .zoom {
+      zoom: 4;
+    }
+  </style>
+  <body>
+    <marquee style="font-size: {{ [9, 10, 11] | random }}pt;">{% block marquee %}marqueeeeeee{% endblock %}</marquee>
+    {% block body %}
+    {% endblock %}
+  </body>
+</html>

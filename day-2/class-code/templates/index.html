@@ -1,0 +1,26 @@
+{% extends "parent.html" %}
+{% block title %}a listing of tic tac toe games{% endblock %}
+{% block body %}
+{% include "macros.html" %}            {# renders the html #}
+{% import "macros.html" as myMacros %} {# allows variables and macros to be accessed in this file #}
+
+<div class="no-zoom">
+  <form method='post' action='/create'>
+    <button>Create a new game</button>
+  </form>
+<ul>
+{% for game in games %}
+ <li>
+   <a href="/{{ loop.index0 }}">{{ myMacros.gameState(game) }}</a>
+   <form method="post" action="/delete">
+     <button>delete</button>
+     <input type="hidden" name="X-HTTP-METHOD" value="delete"/>
+     <input type="hidden" name="gameIndex" value="{{ loop.index0 }}"/>
+   </form>
+ </li>
+{% endfor %}
+</ul>
+
+We have {{ games | length }} games for you to play!<br/>
+{% endblock %}
+</div>
