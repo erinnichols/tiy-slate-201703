@@ -14,15 +14,17 @@ let readFile = Promise.promisify(fs.readFile);
 
 let gameList = [];
 
+function processFile(fileName) {
+  return readFile(`./sandwich/${fileName}`, {encoding: 'utf-8'})
+    .then(json => TicTacToeGame.fromJSON(json))
+    .then(game => gameList.push(game))
+    .catch(err => console.error(err));
+}
+
 readDir('./sandwich')
-  .then(arr => {
-    arr.forEach(fileName => {
-      readFile(`./sandwich/${fileName}`)
-        .then(json => TicTacToeGame.fromJSON(json))
-        .then(game => gameList.push(game))
-        .catch(err => console.error(err))
-    });
-  })
+  // .map(stuff => console.log(stuff))
+  .all(fileName => processFile(fileName))
+  .then(() => console.log(gameList))
   .catch(err => console.error(err));
 
 module.exports = gameList;
