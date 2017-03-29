@@ -17,14 +17,12 @@ let gameList = [];
 function processFile(fileName) {
   return readFile(`./sandwich/${fileName}`, {encoding: 'utf-8'})
     .then(json => TicTacToeGame.fromJSON(json))
-    .then(game => gameList.push(game))
-    .catch(err => console.error(err));
+    .then(game => gameList.push(game));
 }
 
 readDir('./sandwich')
   // .map(stuff => console.log(stuff))
-  .all(fileName => processFile(fileName))
-  .then(() => console.log(gameList))
-  .catch(err => console.error(err));
+  .map(fileName => processFile(fileName))
+  .then(() => console.log(gameList));
 
 module.exports = gameList;
