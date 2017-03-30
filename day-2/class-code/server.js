@@ -70,6 +70,7 @@ app.post('/create', function(req, res) {
     gameId: new Date().valueOf()
   });
   globalGames.push(game);
+  saveGame(game);
   let gameIndex = globalGames.length - 1;
   res.redirect(`/${gameIndex}`);
 });
@@ -79,11 +80,7 @@ app.post('/:gameIndex', function(req, res) {
   let game = globalGames[gameIndex];
   let { row, col } = req.body;
   game.play(Number.parseInt(row), Number.parseInt(col));
-
-  // here. save this game to disk.
-  let data = game.toJSON();
-  let fileName = `./sandwich/${game.gameId}.json`;
-  fs.writeFile(fileName, data);
+  saveGame(game);
   if (game.isOver()) {
     return res.render('game.html', {
       game: game,
@@ -102,6 +99,12 @@ app.delete('/delete', function(req, res) {
   fs.unlink(`./sandwich/${game.gameId}.json`);
   res.redirect('/');
 });
+
+function saveGame(game) {
+  let data = game.toJSON();
+  let fileName = `./sandwich/${game.gameId}.json`;
+  fs.writeFile(fileName, data);
+}
 
 let globalGames;
 
