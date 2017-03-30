@@ -10,6 +10,8 @@ let fs = require('fs');
 let Promise = require('bluebird');
 let readDir = Promise.promisify(fs.readdir);
 let readFile = Promise.promisify(fs.readFile);
+let writeFile = Promise.promisify(fs.writeFile);
+let unlink = Promise.promisify(fs.unlink);
 const fileDir = './sandwich'
 let express = require('express');
 let nunjucks = require('nunjucks');
@@ -70,9 +72,12 @@ app.post('/create', function(req, res) {
     gameId: new Date().valueOf()
   });
   globalGames.push(game);
-  saveGame(game);
   let gameIndex = globalGames.length - 1;
-  res.redirect(`/${gameIndex}`);
+  let data = game.toJSON();
+  let fileName = `./${fileDir}/${game.gameId}.json`;
+  writeFile(fileName, data)
+    .then(() => res.redirect(`/${gameIndex}`))
+    .catch(err => res.status(500).json(err));
 });
 
 app.post('/:gameIndex', function(req, res) {
@@ -80,14 +85,19 @@ app.post('/:gameIndex', function(req, res) {
   let game = globalGames[gameIndex];
   let { row, col } = req.body;
   game.play(Number.parseInt(row), Number.parseInt(col));
-  saveGame(game);
-  if (game.isOver()) {
-    return res.render('game.html', {
-      game: game,
-      index: gameIndex
-    });
-  }
-  res.redirect(`/${gameIndex}`);
+  let data = game.toJSON();
+  let fileName = `./${fileDir}/${game.gameId}.json`;
+  writeFile(fileName, data)
+    .then(() => {
+      if (game.isOver()) {
+        return res.render('game.html', {
+          game: game,
+          index: gameIndex
+        });
+      }
+      res.redirect(`/${gameIndex}`);
+    })
+    .catch(err => res.status(500).json(err));
 });
 
 app.delete('/delete', function(req, res) {
@@ -96,15 +106,10 @@ app.delete('/delete', function(req, res) {
   // remove from globalGames
   globalGames.splice(gameIndex, 1);
   // delete the file
-  fs.unlink(`./sandwich/${game.gameId}.json`);
-  res.redirect('/');
+  unlink(`./${fileDir}/${game.gameId}.json`)
+    .then(() => res.redirect('/'))
+    .catch(err => res.status(500).json(err));
 });
-
-function saveGame(game) {
-  let data = game.toJSON();
-  let fileName = `./sandwich/${game.gameId}.json`;
-  fs.writeFile(fileName, data);
-}
 
 let globalGames;
 
